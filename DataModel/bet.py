@@ -1,4 +1,4 @@
-"""Module from the bet class"""
+"""Module of the bet class"""
 
 
 class Bet:
