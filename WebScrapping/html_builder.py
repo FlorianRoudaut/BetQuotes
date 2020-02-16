@@ -23,7 +23,7 @@ def build_node_and_childs(content):
     last_index = 0
     while last_index < content_len:
         try:
-            tree = HtmlElement()
+            element = HtmlElement()
 
             open_index = content.index("<", last_index)
             close_index = content.index(">", last_index)
@@ -31,19 +31,9 @@ def build_node_and_childs(content):
             tag_name = content[open_index+1:close_index]
 
             if tag_name.__contains__(" "):
-                split = tag_name.split()
-                first = True
-                for sub in split:
-                    if first:
-                        tag_name = sub
-                        first = False
-                    elif sub.__contains__("="):
-                        sub_split = sub.split("=")
-                        attribute_name = sub_split[0]
-                        attribute_value = sub_split[1]
-                        tree.attributes[attribute_name] = attribute_value
+                tag_name = set_tag_attributes(element, tag_name)
 
-            tree.tag_type = tag_name
+            element.tag_type = tag_name
 
             closing_tag = "</"+tag_name+">"
             if content.__contains__(closing_tag):
@@ -56,13 +46,13 @@ def build_node_and_childs(content):
                 sub_section = content[close_index+1:closing_tag_index]
 
             if not sub_section.__contains__("<"):
-                tree.content = sub_section
-                childs_list.append(tree)
+                element.content = sub_section
+                childs_list.append(element)
             else:
                 sub_trees = build_node_and_childs(sub_section)
                 for sub_tree in sub_trees:
-                    tree.children.append(sub_tree)
-                childs_list.append(tree)
+                    element.children.append(sub_tree)
+                childs_list.append(element)
         except ValueError:
             print(ValueError)
             print("ValueError for content "+content)
@@ -70,6 +60,21 @@ def build_node_and_childs(content):
 
     return childs_list
 
+def set_tag_attributes(node, tag_name_with_attributes):
+    """ Set the tag attribites and return the tag name without attributes"""
+    split = tag_name_with_attributes.split()
+    first = True
+    tag_name = ""
+    for sub in split:
+        if first:
+            tag_name = sub
+            first = False
+        elif sub.__contains__("="):
+            sub_split = sub.split("=")
+            attribute_name = sub_split[0]
+            attribute_value = sub_split[1]
+            node.attributes[attribute_name] = attribute_value
+    return tag_name
 
 def find_closing_tag(tag_name, content, last_index):
     """finds the tag that closes the opening started at lastindex"""

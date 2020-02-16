@@ -77,7 +77,7 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(nodes.__len__(), 2)
         self.assertEqual(nodes[0].attributes.__len__(), 1)
         self.assertEqual(nodes[0].attributes['href'], '"https://www.w3schools.com"')
-        
+
         nodes = tree.get_element_by_tag_type("img")
         self.assertEqual(nodes.__len__(), 1)
         self.assertEqual(nodes[0].attributes.__len__(), 3)
