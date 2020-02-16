@@ -1,5 +1,5 @@
 """list of functions used to build an html tree from an html web page string"""
-import html_element
+from WebScrapping.html_element import HtmlElement
 
 
 def build_html_tree(page):
@@ -23,7 +23,7 @@ def build_node_and_childs(content):
     last_index = 0
     while last_index < content_len:
         try:
-            tree = html_element.HtmlElement()
+            tree = HtmlElement()
 
             open_index = content.index("<", last_index)
             close_index = content.index(">", last_index)
@@ -37,7 +37,7 @@ def build_node_and_childs(content):
                     if first:
                         tag_name = sub
                         first = False
-                    else:
+                    elif sub.__contains__("="):
                         sub_split = sub.split("=")
                         attribute_name = sub_split[0]
                         attribute_value = sub_split[1]
@@ -47,7 +47,7 @@ def build_node_and_childs(content):
 
             closing_tag = "</"+tag_name+">"
             if content.__contains__(closing_tag):
-                closing_tag_index = content.rindex(closing_tag, last_index)
+                closing_tag_index = find_closing_tag(tag_name, content, last_index)
                 last_index = closing_tag_index+closing_tag.__len__()
                 sub_section = content[close_index+1:closing_tag_index]
             else:
@@ -64,11 +64,45 @@ def build_node_and_childs(content):
                     tree.children.append(sub_tree)
                 childs_list.append(tree)
         except ValueError:
+            print(ValueError)
             print("ValueError for content "+content)
             last_index = content_len
 
     return childs_list
 
+
+def find_closing_tag(tag_name, content, last_index):
+    """finds the tag that closes the opening started at lastindex"""
+    start_tag = "<"+tag_name
+    start_tag_len = start_tag.__len__()
+
+    closing_tag = "</"+tag_name+">"
+    closing_tag_len = closing_tag.__len__()
+    closing_tag_index = -1
+
+    position = last_index
+    end = content.__len__()-closing_tag_len
+    open_tags = 0
+
+    while position <= end:
+        try_start = content[position:position+start_tag_len]
+        if try_start == start_tag:
+            open_tags = open_tags +1
+            position = position + start_tag_len
+            continue
+
+        try_close = content[position:position+closing_tag_len]
+        if try_close == closing_tag:
+            open_tags = open_tags - 1
+            if open_tags == 0:
+                return position
+
+            position = position + closing_tag_len
+            continue
+
+        position = position + 1
+
+    return closing_tag_index
 
 def remove_doctype(page):
     """removes the doctype from the html page"""
