@@ -36,6 +36,15 @@ PAGE_WITH_ATTRIBUTE = """ <!DOCTYPE html>
     </body>
 </html> """
 
+PAGE_WITH_COMMENT = """ <!DOCTYPE html>
+<html>
+    <body>
+        <p>
+            <!--This is a comment.-->
+            <img src="img_girl.jpg" width="500" height="600">
+        </p>
+    </body>
+</html> """
 
 class SimplePageTest(unittest.TestCase):
     """ Test to parse the simple html page above"""
@@ -94,6 +103,20 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(nodes.__len__(), 1)
         self.assertEqual(nodes[0].attributes.__len__(), 1)
 
+    def test_with_comment(self):
+        """ Test to check comments are correctly handled"""
+        tree = build_html_tree(PAGE_WITH_COMMENT)
+
+        nodes = tree.get_element_by_tag_type("p")
+        comment_node = nodes[0].children[0]
+        self.assertIsNotNone(comment_node)
+        self.assertEqual(comment_node.tag_type, "!--")
+        self.assertEqual(comment_node.content, "This is a comment.")
+
+        img_node = nodes[0].children[1]
+        self.assertIsNotNone(img_node)
+        self.assertEqual(img_node.tag_type, "img")
+        self.assertEqual(img_node.attributes["height"], '"600"')
 
 if __name__ == '__main__':
     unittest.main()

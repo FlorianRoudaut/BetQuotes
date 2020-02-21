@@ -29,13 +29,18 @@ def build_node_and_childs(content):
             close_index = content.index(">", last_index)
 
             tag_name = content[open_index+1:close_index]
+            if tag_name.startswith("!--"):
+                handle_comment(element, tag_name)
+                last_index = close_index+1
+                childs_list.append(element)
+                continue
 
             if tag_name.__contains__(" "):
                 tag_name = set_tag_attributes(element, tag_name)
 
             element.tag_type = tag_name
-
             closing_tag = "</"+tag_name+">"
+
             if content.__contains__(closing_tag):
                 closing_tag_index = find_closing_tag(tag_name, content, last_index)
                 last_index = closing_tag_index+closing_tag.__len__()
@@ -54,8 +59,8 @@ def build_node_and_childs(content):
                     element.children.append(sub_tree)
                 childs_list.append(element)
         except ValueError:
-            print(ValueError)
-            print("ValueError for content "+content)
+            #print(ValueError)
+            #print("ValueError for content "+content)
             last_index = content_len
 
     return childs_list
@@ -117,3 +122,8 @@ def remove_doctype(page):
 def remove_lines(page):
     """removes the lines skip"""
     return page.replace("\n", "")
+
+def handle_comment(element, tag_name):
+    """ Builds the element for the particular case of a comment """
+    element.tag_type = "!--"
+    element.content = tag_name.replace("!--", "").replace("--", "")

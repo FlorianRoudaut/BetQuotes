@@ -330,13 +330,13 @@ TEST_PAGE = r"""<!DOCTYPE html>
     <div class="row">
       <div class="col-sm-10">
         <div class="breadcrumb-wrapper"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"> <a href="/"> <span itemprop="title">Paris sportifs </span> </a> </span><span class="breadcrumb-sep">&gt;</span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"> <a href="/pari/sport/8/rugby"> <span itemprop="title">Rugby </span> </a> </span><span class="breadcrumb-sep">&gt;</span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"> <a href="/pari/competition/1366/rugby/top-14"> <span itemprop="title">TOP 14 </span> </a> </span></div>      </div>
-      <div class="col-sm-2">
-        <div class="date-wrapper">
-          <time datetime="2020-02-13 20:53">13 février 2020 - 20h53</time>
+          <div class="col-sm-2">
+            <div class="date-wrapper">
+              <time datetime="2020-02-13 20:53">13 février 2020 - 20h53</time>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 </aside>
 
 
