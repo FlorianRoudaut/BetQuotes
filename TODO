@@ -1,7 +1,6 @@
 HIGH
 
-1. Handle tags inside text
-2. Handle the divs taht are not correcly closed
+1. Handle the divs taht are not correcly closed
 <aside id="breadcrumb">
   <div class="container">
     <div class="row">

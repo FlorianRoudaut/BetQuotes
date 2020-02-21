@@ -46,6 +46,15 @@ PAGE_WITH_COMMENT = """ <!DOCTYPE html>
     </body>
 </html> """
 
+PAGE_WITH_TAG_IN_CONTENT = """ <!DOCTYPE html>
+<html>
+    <body>
+        <p>Before Link<a href="https://www.pmu.fr/turf/#!/informations-legales/3" 
+        target="_blank" class="cnil-link">Cliquez ici</a> After Link
+        </p>
+    </body>
+</html> """
+
 class SimplePageTest(unittest.TestCase):
     """ Test to parse the simple html page above"""
 
@@ -114,9 +123,19 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(comment_node.content, "This is a comment.")
 
         img_node = nodes[0].children[1]
-        self.assertIsNotNone(img_node)
         self.assertEqual(img_node.tag_type, "img")
         self.assertEqual(img_node.attributes["height"], '"600"')
+
+    def test_page_with_tag_in_content(self):
+        """ Test when a link is embedded in text"""
+        tree = build_html_tree(PAGE_WITH_TAG_IN_CONTENT)
+
+        nodes = tree.get_element_by_tag_type("p")
+        paragraph = nodes[0]
+        self.assertEqual(paragraph.content, "Before Link After Link")
+        self.assertEqual(paragraph.children.__len__(), 1)
+        link = paragraph.children[0]
+        self.assertEqual(link.tag_type, "a")
 
 if __name__ == '__main__':
     unittest.main()

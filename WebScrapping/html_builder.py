@@ -50,14 +50,30 @@ def build_node_and_childs(content):
                 last_index = closing_tag_index+1
                 sub_section = content[close_index+1:closing_tag_index]
 
-            if not sub_section.__contains__("<"):
-                element.content = sub_section
-                childs_list.append(element)
-            else:
+            sub_section = sub_section.strip()
+            if sub_section.startswith("<"):
                 sub_trees = build_node_and_childs(sub_section)
                 for sub_tree in sub_trees:
                     element.children.append(sub_tree)
                 childs_list.append(element)
+            else:
+                if sub_section.__contains__("<"):
+                    open_tag_index = sub_section.index("<")
+                    close_tag_index = sub_section.rindex(">")+1
+
+                    start = sub_section[0:open_tag_index]
+                    end = sub_section[close_tag_index:]
+                    element.content = start+end
+
+                    tags = sub_section[open_tag_index:close_tag_index]
+                    sub_trees = build_node_and_childs(tags)
+                    for sub_tree in sub_trees:
+                        element.children.append(sub_tree)
+                else:
+                    element.content = sub_section
+
+                childs_list.append(element)
+
         except ValueError:
             #print(ValueError)
             #print("ValueError for content "+content)
