@@ -13,66 +13,33 @@ sys.path.append('/home/florian/Documents/Dev/BetQuotes/')
 
 from WebScrapping.html_builder import build_html_tree
 
-SIMPLE_PAGE = """ <!DOCTYPE html>
-<html>
-    <body>
-        <h1>My First Heading</h1>
-        <p>My first paragraph.</p>
-    </body>
-</html> """
-
-PAGE_WITH_ATTRIBUTE = """ <!DOCTYPE html>
-<html>
-    <body>
-        <p>
-            <a href="https://www.w3schools.com">This is a link</a>
-            <a href="https://www.w3schools.com">This is a second link</a>
-            <img src="img_girl.jpg" width="500" height="600">
-            <div class="cities">
-                <h2>Paris</h2>
-                <p>Paris is the capital of France.</p>
-            </div>
-        </p>
-    </body>
-</html> """
-
-PAGE_WITH_COMMENT = """ <!DOCTYPE html>
-<html>
-    <body>
-        <p>
-            <!--This is a comment.-->
-            <img src="img_girl.jpg" width="500" height="600">
-        </p>
-    </body>
-</html> """
-
-PAGE_WITH_TAG_IN_CONTENT = """ <!DOCTYPE html>
-<html>
-    <body>
-        <p>Before Link<a href="https://www.pmu.fr/turf/#!/informations-legales/3" 
-        target="_blank" class="cnil-link">Cliquez ici</a> After Link
-        </p>
-    </body>
-</html> """
 
 class SimplePageTest(unittest.TestCase):
     """ Test to parse the simple html page above"""
 
+    SIMPLE_PAGE = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <h1>My First Heading</h1>
+            <p>My first paragraph.</p>
+        </body>
+    </html> """
+
     def test_depth(self):
         """ Tests the function to compute the depth of the page """
-        tree = build_html_tree(SIMPLE_PAGE)
+        tree = build_html_tree(self.SIMPLE_PAGE)
         depth = tree.depth()
         self.assertEqual(depth, 3)
 
     def test_count_nodes(self):
         """ Tests the function to compute the depth of the page """
-        tree = build_html_tree(SIMPLE_PAGE)
+        tree = build_html_tree(self.SIMPLE_PAGE)
         nodes_count = tree.count_nodes()
         self.assertEqual(nodes_count, 4)
 
     def test_get_element_by_type(self):
         """ Tests the function to retrieve the element by tag type """
-        tree = build_html_tree(SIMPLE_PAGE)
+        tree = build_html_tree(self.SIMPLE_PAGE)
 
         nodes = tree.get_element_by_tag_type("h1")
         self.assertEqual(nodes.__len__(), 1)
@@ -82,9 +49,24 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(nodes.__len__(), 1)
         self.assertEqual(nodes[0].content, "My first paragraph.")
 
+    PAGE_WITH_ATTRIBUTE = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <p>
+                <a href="https://www.w3schools.com">This is a link</a>
+                <a href="https://www.w3schools.com">This is a second link</a>
+                <img src="img_girl.jpg" width="500" height="600">
+                <div class="cities">
+                    <h2>Paris</h2>
+                    <p>Paris is the capital of France.</p>
+                </div>
+            </p>
+        </body>
+    </html> """
+
     def test_retrieve_attribute(self):
         """ Tests the function to retrieve the attributes of an element """
-        tree = build_html_tree(PAGE_WITH_ATTRIBUTE)
+        tree = build_html_tree(self.PAGE_WITH_ATTRIBUTE)
 
         nodes = tree.get_element_by_tag_type("p")
         self.assertEqual(nodes.__len__(), 2)
@@ -106,15 +88,25 @@ class SimplePageTest(unittest.TestCase):
     def test_get_element_by_attribute(self):
         """ Test o retrieve correctly an element using its attribute,
         like getting an element by class """
-        tree = build_html_tree(PAGE_WITH_ATTRIBUTE)
+        tree = build_html_tree(self.PAGE_WITH_ATTRIBUTE)
 
         nodes = tree.get_element_by_attribute("class", '"cities"')
         self.assertEqual(nodes.__len__(), 1)
         self.assertEqual(nodes[0].attributes.__len__(), 1)
 
+    PAGE_WITH_COMMENT = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <p>
+                <!--This is a comment.-->
+                <img src="img_girl.jpg" width="500" height="600">
+            </p>
+        </body>
+    </html> """
+
     def test_with_comment(self):
         """ Test to check comments are correctly handled"""
-        tree = build_html_tree(PAGE_WITH_COMMENT)
+        tree = build_html_tree(self.PAGE_WITH_COMMENT)
 
         nodes = tree.get_element_by_tag_type("p")
         comment_node = nodes[0].children[0]
@@ -126,9 +118,36 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(img_node.tag_type, "img")
         self.assertEqual(img_node.attributes["height"], '"600"')
 
+    PAGE_WITH_TAG_IN_CONTENT = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <p>Before Link<a href="https://www.pmu.fr/turf/#!/informations-legales/3" 
+            target="_blank" class="cnil-link">Cliquez ici</a> After Link
+            </p>
+        </body>
+    </html> """
+
+    PAGE_WITH_TAG_IN_CONTENT2 = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <p>Before Link<a href="https://www.pmu.fr/turf/#!/informations-legales/3" 
+            target="_blank" class="cnil-link">Cliquez ici</a>
+            </p>
+        </body>
+    </html> """
+
+    PAGE_WITH_TAG_IN_CONTENT3 = """ <!DOCTYPE html>
+    <html>
+        <body>
+            <p><a href="https://www.pmu.fr/turf/#!/informations-legales/3" 
+            target="_blank" class="cnil-link">Cliquez ici</a>After Link
+            </p>
+        </body>
+    </html> """
+
     def test_page_with_tag_in_content(self):
         """ Test when a link is embedded in text"""
-        tree = build_html_tree(PAGE_WITH_TAG_IN_CONTENT)
+        tree = build_html_tree(self.PAGE_WITH_TAG_IN_CONTENT)
 
         nodes = tree.get_element_by_tag_type("p")
         paragraph = nodes[0]
@@ -136,6 +155,16 @@ class SimplePageTest(unittest.TestCase):
         self.assertEqual(paragraph.children.__len__(), 1)
         link = paragraph.children[0]
         self.assertEqual(link.tag_type, "a")
+
+        tree = build_html_tree(self.PAGE_WITH_TAG_IN_CONTENT2)
+        nodes = tree.get_element_by_tag_type("p")
+        paragraph = nodes[0]
+        self.assertEqual(paragraph.content, "Before Link")
+
+        tree = build_html_tree(self.PAGE_WITH_TAG_IN_CONTENT3)
+        nodes = tree.get_element_by_tag_type("p")
+        paragraph = nodes[0]
+        self.assertEqual(paragraph.content, "After Link")
 
 if __name__ == '__main__':
     unittest.main()

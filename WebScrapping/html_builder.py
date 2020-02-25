@@ -37,21 +37,32 @@ def build_node_and_childs(content):
 
             if tag_name.__contains__(" "):
                 tag_name = set_tag_attributes(element, tag_name)
+            if "id" in element.attributes:
+                if element.attributes["id"] == '"betslip"':
+                    return []
+            if "class" in element.attributes:
+                if element.attributes["class"] == '"bets-header"':
+                    return []
 
             element.tag_type = tag_name
             closing_tag = "</"+tag_name+">"
 
             if content.__contains__(closing_tag):
                 closing_tag_index = find_closing_tag(tag_name, content, last_index)
-                last_index = closing_tag_index+closing_tag.__len__()
-                sub_section = content[close_index+1:closing_tag_index]
+                if(closing_tag_index>close_index):
+                    last_index = closing_tag_index+closing_tag.__len__()
+                    sub_section = content[close_index+1:closing_tag_index]
+                else:
+                    closing_tag_index = content.index(">", last_index)
+                    last_index = closing_tag_index+1
+                    sub_section = content[close_index+1:closing_tag_index]
             else:
                 closing_tag_index = content.index(">", last_index)
                 last_index = closing_tag_index+1
                 sub_section = content[close_index+1:closing_tag_index]
 
             sub_section = sub_section.strip()
-            if sub_section.startswith("<"):
+            if sub_section.startswith("<") and sub_section.endswith(">"):
                 sub_trees = build_node_and_childs(sub_section)
                 for sub_tree in sub_trees:
                     element.children.append(sub_tree)
@@ -74,9 +85,10 @@ def build_node_and_childs(content):
 
                 childs_list.append(element)
 
-        except ValueError:
+        except Exception as ex:
             #print(ValueError)
             #print("ValueError for content "+content)
+            print(ex)
             last_index = content_len
 
     return childs_list

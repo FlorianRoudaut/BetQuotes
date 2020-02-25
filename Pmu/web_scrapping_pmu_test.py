@@ -2938,19 +2938,13 @@ class SimplePageTest(unittest.TestCase):
     """ Test to parse the simple html page below"""
 
     def test_parse(self):
-        """ Tests the function to compute the depth of the page """
-        try:
-            tree = build_html_tree(TEST_PAGE)
-        except Exception:
-            print(Exception)
-        except:
-            print("genereic error")
-        depth = tree.depth()
-        self.assertEqual(depth, 205)
-        nodes = tree.get_element_by_attribute("dataname-", '"sportif.clic.parier.sports.competition.match.cote"')
+        """ Tests the function to get the quotes from an in memory page """
+        page = TEST_PAGE.replace("<%", "%").replace("%>", "%")
+        tree = build_html_tree(page)
+
+        nodes = tree.get_element_by_attribute("data-name", '"sportif.clic.parier.sports.competition.match.cote"')
         for i in nodes:
             print(i.content)
 
 if __name__ == '__main__':
     unittest.main()
-
